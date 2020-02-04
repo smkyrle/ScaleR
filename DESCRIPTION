@@ -1,0 +1,11 @@
+Package: ScaleR
+Type: Package
+Title: Package for employing PLS or Ridge with scaling considerations
+Version: 0.1.0
+Author: Who wrote it
+Maintainer: Kristofer Linton-Reid <kl2418@ic.ac.uk>
+Description: This package employs PLS or ridge regression with optimal scaling factor employed.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: pls, glmnet, caret  
