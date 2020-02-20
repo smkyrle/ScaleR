@@ -1,3 +1,18 @@
+##### r-square function
+
+r_squared <- function(y, yhat) {
+  ybar <- mean(y)
+  ## Total SS
+  ss_tot <- sum((y - ybar)^2)
+  ## Residual SS
+  ss_res <- sum((y - yhat)^2)
+  ## R^2 = 1 - ss_res/ ss_tot
+  R2_Y <-  1 - (ss_res / ss_tot)
+  return(R2_Y)
+}
+
+
+
 #### Ridge Function
 Ridge <-function(x, y){
   RSquare <- list()
