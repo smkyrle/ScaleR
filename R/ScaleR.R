@@ -52,8 +52,8 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE){
       plot(as.numeric(Res$Scaling_Factor),as.numeric(Res$RSquared_Y),type="l",col="red", xlim=c(0, 1), ylim=c(0, max(as.numeric(Res$RSquared_Y)+0.1)), xlab='', ylab='')
       par(new=TRUE)
       lines(as.numeric(Res$Scaling_Factor),as.numeric(Res$QSquared_Y), col='green')
-      title(main="Scaling Factor vs R2 and Q2",
-            xlab="Scaling Factor ", ylab="R2 & Q2")
+      title(main="Scaling Factor vs R2Y and Q2Y",
+            xlab="Scaling Factor ", ylab="R2Y & Q2Y")
       par(xpd=TRUE)
       legend("topright", title="Metric",
              c("R2","Q2"), fill=c('red','green'))}} ###
@@ -66,8 +66,8 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE){
       plot(as.numeric(Res$Scaling_Factor),as.numeric(Res$RSquared_Y),type="l",col="red", xlim=c(0, 1), ylim=c(0, max(as.numeric(Res$RSquared_Y)+0.1)), xlab='', ylab='')
       par(new=TRUE)
       lines(as.numeric(Res$Scaling_Factor),as.numeric(Res$QSquared_Y), col='green')
-      title(main="Scaling Factor vs R2 and Q2",
-            xlab="Scaling Factor ", ylab="R2 & Q2")
+      title(main="Scaling Factor vs R2Y and Q2Y",
+            xlab="Scaling Factor ", ylab="R2Y & Q2Y")
       par(xpd=TRUE)
       legend("topright", title="Metric",
              c("R2","Q2"), fill=c('red','green'))}} ###
