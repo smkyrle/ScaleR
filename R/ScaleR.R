@@ -34,6 +34,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE){
   if (nrow(x)!=nrow(y)){
     print('Must provide x and y with same number of samples/rows')
   }
+  y<- as.matrix(y)
   trainingIndex <- sample(1:nrow(x), 0.8*nrow(x)) # indices for 80% training data ### can edit this/ take the training and test spilit out of for loop incase we need directly comparable results
   trainingData <- x[trainingIndex, ] # training data
   testData <- x[-trainingIndex, ] # test data
@@ -45,15 +46,26 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE){
 
   if (method=='Ridge') {
     print('Employing Ridge Regression')
-    Ridge(Data_Sets, trainingY)}
+    Res <- Ridge(Data_Sets, trainingY)
+    Res$Scaling_Factor <- Scaling_Factor
+    if (plot){
+      plot(as.numeric(Res$Scaling_Factor),as.numeric(Res$RSquared_Y),type="l",col="red", xlim=c(0, 1), ylim=c(0, max(as.numeric(Res$RSquared_Y)+0.1)), xlab='', ylab='')
+      par(new=TRUE)
+      lines(as.numeric(Res$Scaling_Factor),as.numeric(Res$QSquared_Y), col='green')
+      title(main="Scaling Factor vs R2 and Q2",
+            xlab="Scaling Factor ", ylab="R2 & Q2")
+      par(xpd=TRUE)
+      legend("topright", title="Metric",
+             c("R2","Q2"), fill=c('red','green'))}} ###
+
   if (method=='PLS') {
     print('Employing PLS')
     Res <- PLS(Data_Sets, trainingY)
     Res$Scaling_Factor <- Scaling_Factor
     if (plot){
-      plot(as.numeric(Res$Scaling_Factor),as.numeric(Res$RSquared),type="l",col="red", xlim=c(0, 1), ylim=c(0, max(as.numeric(Res$RSquared)+0.1)), xlab='', ylab='')
+      plot(as.numeric(Res$Scaling_Factor),as.numeric(Res$RSquared_Y),type="l",col="red", xlim=c(0, 1), ylim=c(0, max(as.numeric(Res$RSquared_Y)+0.1)), xlab='', ylab='')
       par(new=TRUE)
-      lines(as.numeric(Res$Scaling_Factor),as.numeric(Res$QSquared), col='green')
+      lines(as.numeric(Res$Scaling_Factor),as.numeric(Res$QSquared_Y), col='green')
       title(main="Scaling Factor vs R2 and Q2",
             xlab="Scaling Factor ", ylab="R2 & Q2")
       par(xpd=TRUE)
@@ -61,4 +73,5 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE){
              c("R2","Q2"), fill=c('red','green'))}} ###
   Res <- list(Res, testY, trainingY )
   names(Res) <- c('Results', 'Test_Y', 'Training_Y')
-  return(Res)}
+  return(Res)
+}
