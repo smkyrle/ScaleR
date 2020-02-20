@@ -7,3 +7,7 @@ Examples:
 Result <- ScaleR(x,y,method='PLS', inter=0.1 plot=TRUE)
 
 Result_Ridge <- ScaleR(x,y,method='Ridge', inter0.1, plot= TRUE) 
+
+Default method is PLS
+Default inter is 0.1
+Default plot=TRUE
