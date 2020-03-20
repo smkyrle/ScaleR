@@ -8,4 +8,4 @@ Description: This package employs PLS or ridge regression with optimal scaling f
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports: pls, glmnet 
+Depends: pls, glmnet 
