@@ -35,6 +35,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE){
     print('Must provide x and y with same number of samples/rows')
   }
   y<- as.matrix(y)
+  set.seed(123)
   trainingIndex <- sample(1:nrow(x), 0.8*nrow(x)) # indices for 80% training data ### can edit this/ take the training and test spilit out of for loop incase we need directly comparable results
   trainingData <- x[trainingIndex, ] # training data
   testData <- x[-trainingIndex, ] # test data
