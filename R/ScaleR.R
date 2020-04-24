@@ -66,7 +66,6 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed=NULL, k=NULL){
     if (k>0 & method=='Ridge'){
             k.RCV <- Ind.RCV.k(Res$RCV, k)
             Data.k <- Data_Sets[c(k.RCV)]
-            str(Data.k)
             model <- Ridge.k(Data.k, y)
             Res <- as.list(Res)
             Res$model <- model}}
