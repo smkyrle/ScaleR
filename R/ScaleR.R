@@ -45,10 +45,9 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed=NULL, k=NULL){
     inter <- inter     
     Scaling_Factor <- seq(0,1, as.numeric(inter))### Scaling_Factor 
     Data_Sets <- SCALE(trainingData, Scaling_Factor) ### Data_Sets of initial training with diffrent scalings 
-    str(Data_Sets)
     
 
-    if (method=='Ridge') {
+    if (method=='Ridge') {                      
                 print('Employing Ridge Regression')
                 Res <- Ridge(Data_Sets, y)
                 Res$Scaling_Factor <- Scaling_Factor
@@ -93,7 +92,6 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed=NULL, k=NULL){
         if (k>0 & method=='PLS'){
             k.RCV <- Ind.RCV.k(Res$RCV, k)
             Data.k <- Data_Sets[c(k.RCV)]
-            str(Data.k)
             model <- PLS.k(Data.k, y)
             Res <- as.list(Res)
             Res$model <- model}} ### 
