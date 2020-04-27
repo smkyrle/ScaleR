@@ -13,18 +13,22 @@ r_squared <- function(y, yhat) {
 
 
 ### RCV indexing function ### 
-Ind.RCV.k <- function(x, k) {
-  lx <- length(x)
-  p <- lx-k
-  xp <- sort(x, partial=p)[p]
-  which(x > xp)
-}
+ ### find index with min diffrence  ### find index with min diffrence 
+Ind.RCV.k <- function(RCV,k){
+    minus.RCV <- RCV
+    minus.RCV[minus.RCV == 0] <- 100
+    minus.RCV[ minus.RCV < -5] <- 100
+    Rcv.k.index <- which.minn(minus.RCV, k)
+    return(Rcv.k.index)
+    }
+                             
+
 
 ### Ridge.k function 
-Ridge.k <-function(Data.k, y){ 
+Ridge.k <-function(Data.k, y, seed_val){ 
 model_out <- list()
 for (i in seq_along(Data.k)) {  
-                            set.seed(seed)
+                            set.seed(seed_val)
                             train.data.k <- as.matrix(Data.k[[i]]) ### One of the training Data sets extrpolated 
                             lambdas <- 10^seq(3, -2, by = -.1) ### glmnet has some bult in lambda range. Here we have values ranging from λ=1010 to λ=10−2, essentially covering the full range of scenarios from the null model containing only the intercept, to the least squares fit.
                             cv.out = glmnet::cv.glmnet(x=train.data.k, y=as.matrix(y), lambda=lambdas, keep=TRUE, type.measure="mse", alpha = 0, standardize= FALSE)
@@ -35,11 +39,11 @@ return(model_out)
 
 ### PLS.k function 
 
-PLS.k <- function(x, y){ 
+PLS.k <- function(x, y, seed_val){ 
 model_out <- list()
 
     for (i in seq_along(x)) {
-    set.seed(123)
+    set.seed(seed_val)
     train.data <- x[[i]] ### One of the training Data sets extrpolated 
     model <- pls::plsr(as.matrix(y)~as.matrix(train.data), data=as.data.frame(train.data), validation = "CV") ## validation-cv, 10 fold cross val
     model_out[[paste0("Factor_",i)]] <- model ### save each model iteritviely 
@@ -49,14 +53,15 @@ return(model_out)
     }
 
 #### Ridge Function 
-Ridge <-function(x, y){ 
+#### Ridge Function 
+Ridge <-function(x, y, seed_val){ 
 RSquare <- list()
 CV_RMSE <- list()
 lambda_out <- list()
 res <- list()
 QSquare <- list()
 for (i in seq_along(x)) {  
-                            set.seed(seed)
+                            set.seed(seed_val)
                                 train.data <- as.matrix(x[[i]]) ### One of the training Data sets extrpolated 
                                 lambdas <- 10^seq(3, -2, by = -.1) ### glmnet has some bult in lambda range. Here we have values ranging from λ=1010 to λ=10−2, essentially covering the full range of scenarios from the null model containing only the intercept, to the least squares fit.
                                 cv.out = glmnet::cv.glmnet(x=train.data, y=as.matrix(y), lambda=lambdas, keep=TRUE, type.measure="mse", alpha = 0, standardize= FALSE) # Fit ridge regression model on training data, default 10 fold crossvalidation
@@ -88,30 +93,34 @@ for (i in seq_along(x)) {
 return(res)
     }
 
-
 ### PLS function 
-
-PLS <- function(x, y){ 
-NComponents = list() ## define key outputs as lists first to save each for loop iteration
-RSquare <- list() ## ^
-QSquare <- list()
+PLS.k <- function(x, y, seed_val){ 
 model_out <- list()
-res <- list()
-CV_RMSEP <- list()
+
     for (i in seq_along(x)) {
-    set.seed(123)
+    set.seed(seed_val)
     train.data <- x[[i]] ### One of the training Data sets extrpolated 
     model <- pls::plsr(as.matrix(y)~as.matrix(train.data), data=as.data.frame(train.data), validation = "CV") ## validation-cv, 10 fold cross val
-    CVRMSEP <- pls::RMSEP(model,'CV')$val ### cross-model-validated RMSEP calculated from the training data set- as not to leak info 
-    NComp <- which.min(CVRMSEP) ## index of minimun CVRMSEP to detemine optimal number of components 
-    RSquare[[paste0(names(x[i]))]] <- pls::R2(model, 'train')$val[as.numeric(NComp)] ## Take R2 for optimal no. comps  
-    QSquare[[paste0(names(x[i]))]]  <- pls::R2(model, 'CV')$val[as.numeric(NComp)] ## Q2 also known as cross-validated R2
-    CV_RMSEP[[paste0("Factor_",i)]]<- min(CVRMSEP)
-    NComponents[[paste0("Factor_",i)]]<- as.numeric(NComp)## save no.componenst 
-    res <- do.call(cbind, list(RSquare, QSquare, NComponents, CV_RMSEP)) ## #bind all lists into results
-    res <- as.data.frame(res)
-        colnames(res) <- c('RSquared_Y', 'QSquared_Y', 'NComponents', 'CV_RMSEP')
+    model_out[[paste0("Factor_",i)]] <- model ### save each model iteritviely 
+   
 }
-return(res)
+return(model_out)
     }
 
+
+### Index min k values in array 
+
+which.minn <- function(x,k){
+  if (k==1)
+    which.min(x)
+  else
+    {
+      if (k>1){
+        ii <- order(x,decreasing=FALSE)[1:min(k,length(x))]
+        ii[!is.na(x[ii])]
+      }
+      else {
+       stop("k must be >=1")
+      }
+    }
+}
