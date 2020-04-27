@@ -23,9 +23,9 @@
 #' @export
 
 
-ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed=NULL, k=NULL){
+ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NULL){
     
-    ## Initital checks inter, data sets etc. ## 
+    ### Test train 80/20 split 
     if (is.null(inter)){print('interval not provided, using default value of 0.1')
         inter=0.1} 
     x <- as.data.frame(x)
@@ -36,20 +36,21 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed=NULL, k=NULL){
     if (nrow(x)!=nrow(y)){
         print('Must provide x and y with same number of samples/rows')
     }
-    ## set seed to default if null/not privided##
-    if (is.null(seed)){
-        seed=1234}
-    seed <- as.numeric(seed)
+    if (is.null(seed_val)){
+        seed_val=1234}
+    seed_val <- as.numeric(seed_val)
+    str(seed_val)
     y<- as.matrix(y)
     trainingData <- as.matrix(x)
     inter <- inter     
     Scaling_Factor <- seq(0,1, as.numeric(inter))### Scaling_Factor 
     Data_Sets <- SCALE(trainingData, Scaling_Factor) ### Data_Sets of initial training with diffrent scalings 
     
+    
 
-    if (method=='Ridge') {                      
+    if (method=='Ridge') {
                 print('Employing Ridge Regression')
-                Res <- Ridge(Data_Sets, y)
+                Res <- Ridge(Data_Sets, y, seed_val)
                 Res$Scaling_Factor <- Scaling_Factor
                 Res$RCV <- as.numeric(Res$RSquared_Y)/as.numeric(Res$QSquared_Y)
                 
@@ -64,9 +65,10 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed=NULL, k=NULL){
             c("R2","Q2"), fill=c('red','green'))}### 
     
     if (k>0 & method=='Ridge'){
-            k.RCV <- Ind.RCV.k(Res$RCV, k)
+              k.RCV <- Ind.RCV.k(Res$RCV, k)
             Data.k <- Data_Sets[c(k.RCV)]
-            model <- Ridge.k(Data.k, y)
+            str(k.RCV)
+            model <- Ridge.k(Data.k, y, seed_val)
             Res <- as.list(Res)
             Res$model <- model}}
     
@@ -74,7 +76,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed=NULL, k=NULL){
 
     if (method=='PLS') {
                 print('Employing PLS')
-                Res <- PLS(Data_Sets, y)
+                Res <- PLS(Data_Sets, y, seed_val)
                 Res$Scaling_Factor <- Scaling_Factor
                 Res$RCV <- as.numeric(Res$RSquared_Y)/as.numeric(Res$QSquared_Y)
 
@@ -91,7 +93,8 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed=NULL, k=NULL){
         if (k>0 & method=='PLS'){
             k.RCV <- Ind.RCV.k(Res$RCV, k)
             Data.k <- Data_Sets[c(k.RCV)]
-            model <- PLS.k(Data.k, y)
+            str(k.RCV)
+            model <- PLS.k(Data.k, y, seed_val)
             Res <- as.list(Res)
             Res$model <- model}} ### 
 return(Res)
