@@ -12,7 +12,7 @@
 #'
 #' @param plot this determines if you require a plot of R2Y and Q2Y against scaling factor, default is TRUE
 #'
-#' @param seed this will allow user to define a seed number if not provided will use the default 1234 
+#' @param seed_val this will allow user to define a seed number if not provided will use the default 1234 
 #'
 #'@ param k is the number of best perforing models according to Robustness of Cross Validation (R2Y/Q2Y)
 #'
