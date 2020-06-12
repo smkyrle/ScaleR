@@ -119,7 +119,7 @@ for (i in seq_along(x)) {
             res <- as.data.frame(res)
             colnames(res) <- c('RSquare', 'NComponents')
         }
-return(model)
+return(res)
     }
 
 ### Index min k values in array 
