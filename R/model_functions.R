@@ -101,7 +101,7 @@ PLS <- function(x, y){
     RMSE <- list()
     res <- list()
 for (i in seq_along(x)) {
-            set.seed(123)
+            set.seed(seed_val)
             inputData <- x[i]
             inputData <- as.data.frame(inputData)
             trainingIndex <- sample(1:nrow(inputData), 0.8*nrow(inputData)) # indices for 80% training data ### can edit this/ take the training and test spilit out of for loop incase we need directly comparable results
