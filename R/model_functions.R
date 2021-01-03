@@ -56,7 +56,7 @@ return(model_out)
 #### Ridge Function 
 Ridge <-function(x, y, seed_val){ 
 RSquare <- list()
-CV_RMSE <- list()
+CV_RMSEP <- list()
 lambda_out <- list()
 res <- list()
 QSquare <- list()
@@ -70,7 +70,7 @@ for (i in seq_along(x)) {
     
                                 RSquare[[paste0("Factor_", i)]] <- r_squared(as.matrix(y), as.matrix(predict(cv.out, newx = train.data, s = cv.out$lambda.min)))
                                 
-                                CV_RMSE[[paste0("Factor_", i)]] <- sqrt(mse)
+                                CV_RMSEP[[paste0("Factor_", i)]] <- sqrt(mse)
                                 lambda_out[[paste0("Factor_", i)]] <- cv.out$lambda.min 
     
                                 Q22 <- lapply(unique(cv.out$foldid), function(id) {
@@ -85,9 +85,9 @@ for (i in seq_along(x)) {
                                      return(Q22)})  
                                 QSquare[[paste0("Factor_", i)]] <- mean(as.numeric(Q22)) ## Q22 lapply fun(id) calulates Q2 for ever fold, now we take the mean  
     
-                                res <- do.call(cbind, list(RSquare, QSquare, CV_RMSE, lambda_out)) ## #bind all lists into results 
+                                res <- do.call(cbind, list(RSquare, QSquare, CV_RMSEP, lambda_out)) ## #bind all lists into results 
                                 res <- as.data.frame(res)
-                                colnames(res) <- c('RSquared_Y','QSquared_Y', 'CV_RMSE', 'lambda_min') 
+                                colnames(res) <- c('RSquared_Y','QSquared_Y', 'CV_RMSEP', 'lambda_min') 
 }
         
 return(res)
