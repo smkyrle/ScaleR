@@ -53,7 +53,6 @@ return(model_out)
     }
 
 #### Ridge Function 
-#### Ridge Function 
 Ridge <-function(x, y, seed_val){ 
 RSquare <- list()
 CV_RMSEP <- list()
