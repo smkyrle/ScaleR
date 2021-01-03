@@ -25,7 +25,7 @@
 
 ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NULL){
     
-    ### Test train 80/20 split 
+    ### Val train 80/20 split 
     if (is.null(inter)){print('interval not provided, using default value of 0.1')
         inter=0.1} 
     x <- as.data.frame(x)
@@ -38,6 +38,9 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
     }
     if (is.null(seed_val)){
         seed_val=1234}
+      if (is.null(k)){
+        k=1}
+    
     seed_val <- as.numeric(seed_val)
     str(seed_val)
     y<- as.matrix(y)
