@@ -1,18 +1,19 @@
-##### r-square function
+###rsquare function
 
 r_squared <- function(y, yhat) {
-  ybar <- mean(y)
-  ## Total SS
-  ss_tot <- sum((y - ybar)^2)
-  ## Residual SS
-  ss_res <- sum((y - yhat)^2)
-  ## R^2 = 1 - ss_res/ ss_tot
-  R2_Y <-  1 - (ss_res / ss_tot)
-  return(R2_Y)
+    ybar <- mean(y)
+    ## Total SS
+    ss_tot <- sum((y - ybar)^2)
+    ## Residual SS
+    ss_res <- sum((y - yhat)^2)
+    ## R^2 = 1 - ss_res/ ss_tot
+   R2_Y <-  1 - (ss_res / ss_tot)
+    return(R2_Y)
 }
 
 
 ### RCV indexing function ### 
+ ### find index with min diffrence  ### find index with min diffrence 
  ### find index with min diffrence  ### find index with min diffrence 
 Ind.RCV.k <- function(RCV,k){
     minus.RCV <- RCV
@@ -21,6 +22,7 @@ Ind.RCV.k <- function(RCV,k){
     Rcv.k.index <- which.minn(minus.RCV, k)
     return(Rcv.k.index)
     }
+          
                              
 
 
@@ -38,7 +40,6 @@ return(model_out)
     }
 
 ### PLS.k function 
-
 PLS.k <- function(x, y, seed_val){ 
 model_out <- list()
 
@@ -52,7 +53,7 @@ model_out <- list()
 return(model_out)
     }
 
-#### Ridge Function 
+### Ridge Function 
 Ridge <-function(x, y, seed_val){ 
 RSquare <- list()
 CV_RMSEP <- list()
@@ -91,8 +92,7 @@ for (i in seq_along(x)) {
         
 return(res)
     }
-
-### PLS function 
+### PLS Function 
 PLS <- function(x, y, seed_val){ 
 NComponents = list() ## define key outputs as lists first to save each for loop iteration
 RSquare <- list() ## ^
@@ -118,6 +118,7 @@ return(res)
     }
 
 ### Index min k values in array 
+
 
 which.minn <- function(x,k){
   if (k==1)
