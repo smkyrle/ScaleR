@@ -14,14 +14,13 @@ r_squared <- function(y, yhat) {
 
 ### RCV indexing function ### 
  ### find index with min diffrence  ### find index with min diffrence 
- ### find index with min diffrence  ### find index with min diffrence 
+
 Ind.RCV.k <- function(RCV,k){
-    minus.RCV <- RCV
-    minus.RCV[minus.RCV == 0] <- 100
-    minus.RCV[ minus.RCV < -5] <- 100
     Rcv.k.index <- which.minn(minus.RCV, k)
     return(Rcv.k.index)
     }
+                             
+
           
                              
 
@@ -119,10 +118,9 @@ return(res)
 
 ### Index min k values in array 
 
-
 which.minn <- function(x,k){
   if (k==1)
-    which.min(x)
+    which.min(x[x>0])
   else
     {
       if (k>1){
