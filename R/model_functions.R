@@ -45,7 +45,7 @@ model_out <- list()
     for (i in seq_along(x)) {
     set.seed(seed_val)
     train.data <- x[[i]] ### One of the training Data sets extrpolated 
-    model <- pls::plsr(as.matrix(y)~as.matrix(train.data), data=as.data.frame(train.data), scale= FALSE, validation = "CV") ## validation-cv, 10 fold cross val
+    model <- pls::plsr(as.matrix(y)~as.matrix(train.data), data=as.data.frame(train.data), validation = "CV") ## validation-cv, 10 fold cross val
     model_out[[paste0("Factor_",i)]] <- model ### save each model iteritviely 
    
 }
@@ -102,7 +102,7 @@ CV_RMSEP <- list()
     for (i in seq_along(x)) {
                     set.seed(seed_val)
                     train.data <- x[[i]] ### One of the training Data sets extrpolated 
-                    model <- pls::plsr(as.matrix(y)~as.matrix(train.data), data=as.data.frame(train.data), scale = FALSE, validation = "CV", ) ## validation-cv, 10 fold cross val
+                    model <- pls::plsr(as.matrix(y)~as.matrix(train.data), data=as.data.frame(train.data), validation = "CV", ) ## validation-cv, 10 fold cross val
                     CVRMSEP <- pls::RMSEP(model,'CV')$val ### cross-model-validated RMSEP calculated from the training data set- as not to leak info 
                     NComp <- which.min(CVRMSEP) ## index of minimun CVRMSEP to detemine optimal number of components 
                     RSquare[[paste0(names(x[i]))]] <- pls::R2(model, 'train')$val[as.numeric(NComp)] ## Take R2 for optimal no. comps  
