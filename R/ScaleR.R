@@ -44,7 +44,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
     inter <- inter     
     Scaling_Factor <- seq(0,1, as.numeric(inter))### Scaling_Factor 
     Data_Sets <- SCALE(trainingData, Scaling_Factor)
-    method_opt= 'RSquared_Y' ### Data_Sets of initial training with diffrent scalings 
+    method_opt= 'RCV' ### Data_Sets of initial training with diffrent scalings 
     
     
 
@@ -110,6 +110,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
                 if (as.numeric(Scaling_Factor[B.ind[1]])==1){
                     inter_2 = (as.numeric(Scaling_Factor[B.ind[1]]) - as.numeric(Scaling_Factor[B.ind[2]]))/10} else {
                     inter_2 = as.numeric(Scaling_Factor[B.ind[1]])/10}
+                if (is.null(inter_2)){inter_2 = inter_1/10}
                 if (as.numeric(Scaling_Factor[B.ind[1]]) < as.numeric(Scaling_Factor[B.ind[2]])) {
                     Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[1]]),as.numeric(Scaling_Factor[B.ind[2]]), as.numeric(inter_2))}else{ 
                     Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[2]]),as.numeric(Scaling_Factor[B.ind[1]]), as.numeric(inter_2))}
