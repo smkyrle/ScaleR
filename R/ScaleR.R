@@ -44,7 +44,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
     inter <- inter     
     Scaling_Factor <- seq(0,1, as.numeric(inter))### Scaling_Factor 
     Data_Sets <- SCALE(trainingData, Scaling_Factor)
-    method_opt= 'CV_RMSEP' ### Data_Sets of initial training with diffrent scalings 
+    method_opt= 'RCV' ### Data_Sets of initial training with diffrent scalings 
     
     
 
