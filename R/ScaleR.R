@@ -102,7 +102,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
                 Res$RCV <- as.numeric(Res$RSquared_Y)/as.numeric(Res$QSquared_Y)
                 B.ind <- which.minn(unlist(Res[method_opt]), k=2)
                 if is.null(B.ind)){print('All RCV(s) are negative, using R-squared')
-                method_opt=RSquared_Y
+                method_opt='RSquared_Y'
                 B.ind <- which.minn(unlist(Res[method_opt]), k=2)} 
                 Res <- as.list(Res)
                 if (as.numeric(Scaling_Factor[B.ind[1]])==0)  {
