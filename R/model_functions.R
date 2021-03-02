@@ -16,7 +16,7 @@ r_squared <- function(y, yhat) {
  ### find index with min diffrence  ### find index with min diffrence 
 
 Ind.RCV.k <- function(RCV,k){
-    Rcv.k.index <- which.minn(minus.RCV, k)
+    Rcv.k.index <- which.minn(RCV, k)
     return(Rcv.k.index)
     }
                              
