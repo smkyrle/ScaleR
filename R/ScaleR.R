@@ -44,7 +44,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
     inter <- inter     
     Scaling_Factor <- seq(0,1, as.numeric(inter))### Scaling_Factor 
     Data_Sets <- SCALE(trainingData, Scaling_Factor)
-    method_opt= 'RCV' ### Data_Sets of initial training with diffrent scalings 
+    method_opt= 'CV_RMSEP' ### Data_Sets of initial training with diffrent scalings 
     
     
 
@@ -58,8 +58,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
                 if (as.numeric(Scaling_Factor[B.ind[1]])==0)  {
                     inter_2 = as.numeric(Scaling_Factor[B.ind[2]])/10 } 
                 if (as.numeric(Scaling_Factor[B.ind[1]])==1){
-                    inter_2 = (as.numeric(Scaling_Factor[B.ind[1]]) - as.numeric(Scaling_Factor[B.ind[2]]))/10} 
-                if (as.numeric(Scaling_Factor[B.ind[1]])!=1 || as.numeric(Scaling_Factor[B.ind[1]])!=0){
+                    inter_2 = (as.numeric(Scaling_Factor[B.ind[1]]) - as.numeric(Scaling_Factor[B.ind[2]]))/10} else {
                     inter_2 = as.numeric(Scaling_Factor[B.ind[1]])/10}
                 if (as.numeric(Scaling_Factor[B.ind[1]]) < as.numeric(Scaling_Factor[B.ind[2]])) {
                     Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[1]]),as.numeric(Scaling_Factor[B.ind[2]]), as.numeric(inter_2))}else{ 
@@ -91,7 +90,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
     if (k>0 & method=='Ridge'){
         k.RCV <- Ind.RCV.k(Res$RCV, k)
         Data.k <- SCALE(trainingData, as.numeric(Res$Scaling_Factor[k.RCV]))
-        model <- PLS.k(Data.k, y, seed_val)
+        model <- Ridge.k(Data.k, y, seed_val)
         Res$model <- model}} ### 
     
             
@@ -102,17 +101,13 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
                 Res$Scaling_Factor <- Scaling_Factor
                 Res$RCV <- as.numeric(Res$RSquared_Y)/as.numeric(Res$QSquared_Y)
                 B.ind <- which.minn(unlist(Res[method_opt]), k=2)
-                if (is.null(as.numeric(B.ind))){print('All RCV(s) are negative, using R-squared')
-                method_opt='RSquared_Y'
-                B.ind <- which.minn(unlist(Res[method_opt]), k=2)} 
                 Res <- as.list(Res)
-                #if (as.numeric(Scaling_Factor[B.ind[1]])==0)  {
-                 #   inter_2 = as.numeric(Scaling_Factor[B.ind[2]])/10 } 
-                #if (as.numeric(Scaling_Factor[B.ind[1]])==1){
-                 #   inter_2 = (as.numeric(Scaling_Factor[B.ind[1]]) - as.numeric(Scaling_Factor[B.ind[2]]))/10} 
-                #if (as.numeric(Scaling_Factor[B.ind[1]])!=1 & as.numeric(Scaling_Factor[B.ind[1]])!=0){
-                    #inter_2 = 0.01}
-                inter_2 =0.01
+                if (as.numeric(Scaling_Factor[B.ind[1]])==0){
+                    inter_2 = 0.01} 
+                if (as.numeric(Scaling_Factor[B.ind[1]])==1){
+                    inter_2 = (as.numeric(Scaling_Factor[B.ind[1]]) - as.numeric(Scaling_Factor[B.ind[2]]))/10}
+                if (as.numeric(Scaling_Factor[B.ind[1]])!=1 & as.numeric(Scaling_Factor[B.ind[1]])!=0){
+                    inter_2 = 0.01}
                 if (as.numeric(Scaling_Factor[B.ind[1]]) < as.numeric(Scaling_Factor[B.ind[2]])) {
                     Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[1]]),as.numeric(Scaling_Factor[B.ind[2]]), as.numeric(inter_2))}else{ 
                     Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[2]]),as.numeric(Scaling_Factor[B.ind[1]]), as.numeric(inter_2))}
