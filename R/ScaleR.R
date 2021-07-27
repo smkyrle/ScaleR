@@ -62,8 +62,8 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
                 if (as.numeric(Scaling_Factor[B.ind[1]])!=1 & as.numeric(Scaling_Factor[B.ind[1]])!=0){
                     inter_2 = 0.01}
                 if (as.numeric(Scaling_Factor[B.ind[1]]) < as.numeric(Scaling_Factor[B.ind[2]])) {
-                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[1]]),as.numeric(Scaling_Factor[B.ind[2]]), as.numeric(inter_2))}else{ 
-                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[2]]),as.numeric(Scaling_Factor[B.ind[1]]), as.numeric(inter_2))}
+                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[2]]),as.numeric(Scaling_Factor[B.ind[1]]), as.numeric(inter_2))}else{ 
+                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[1]]),as.numeric(Scaling_Factor[B.ind[2]]), as.numeric(inter_2))}
                 Data_Sets2 <- SCALE(trainingData, Scaling_Factor_B)
                 Res2 <- Ridge(Data_Sets2, y, seed_val)
                
