@@ -43,18 +43,19 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
     inter <- inter     
     Scaling_Factor <- seq(0,1, as.numeric(inter))### Scaling_Factor 
     Data_Sets <- SCALE(trainingData, Scaling_Factor)
-    method_opt= 'RCV' ### Data_Sets of initial training with diffrent scalings 
+     ### Data_Sets of initial training with diffrent scalings 
     
     
 
     if (method=='Ridge') {
+                method_opt= 'CV_RMSEP'
                 print('Employing Ridge Regression')
                 Res <- Ridge(Data_Sets, y, seed_val)
                 Res$Scaling_Factor <- Scaling_Factor
                 Res$RCV <- as.numeric(Res$RSquared_Y)/as.numeric(Res$QSquared_Y)
                 B.ind <- which.minn(unlist(Res[method_opt]), k=2)
                 Res <- as.list(Res)
-                 if (as.numeric(Scaling_Factor[B.ind[1]])==0){
+                if (as.numeric(Scaling_Factor[B.ind[1]])==0){
                     inter_2 = 0.01} 
                 if (as.numeric(Scaling_Factor[B.ind[1]])==1){
                     inter_2 = (as.numeric(Scaling_Factor[B.ind[1]]) - as.numeric(Scaling_Factor[B.ind[2]]))/10}
@@ -96,6 +97,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
             
 
     if (method=='PLS') {
+        method_opt= 'RCV'
                 print('Employing PLS')
                 Res <- PLS(Data_Sets, y, seed_val)
                 Res$Scaling_Factor <- Scaling_Factor
