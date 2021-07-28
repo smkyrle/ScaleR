@@ -122,6 +122,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
                 Data_Sets2 <- SCALE(trainingData, Scaling_Factor_B)
                 Res2 <- PLS(Data_Sets2, y, seed_val)
                 Res2$Scaling_Factor <- Scaling_Factor_B
+                print(Scaling_Factor_B)
                 Res2$RCV <- as.numeric(Res2$RSquared_Y)/as.numeric(Res2$QSquared_Y)
                 Res3 <- mapply(c,Res[1:6], as.list(Res2[1:6]), SIMPLIFY=FALSE)
                 list.2d <- sapply(Res3[1:6], cbind)
