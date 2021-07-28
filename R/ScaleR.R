@@ -148,6 +148,6 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
             k.RCV <- Ind.RCV.k(Res$RCV, k)
             Data.k <- SCALE(trainingData, as.numeric(Res$Scaling_Factor[k.RCV]))
             model <- PLS.k(Data.k, y, seed_val)
-            Res$model <- model}} ### 
+            Res$model <- model} ### 
 return(Res)
 }
