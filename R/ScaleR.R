@@ -43,32 +43,31 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
     inter <- inter     
     Scaling_Factor <- seq(0,1, as.numeric(inter))### Scaling_Factor 
     Data_Sets <- SCALE(trainingData, Scaling_Factor)
-     ### Data_Sets of initial training with diffrent scalings 
+    method_opt= 'RCV' ### Data_Sets of initial training with diffrent scalings 
     
     
 
     if (method=='Ridge') {
-                method_opt= 'CV_RMSEP'
                 print('Employing Ridge Regression')
                 Res <- Ridge(Data_Sets, y, seed_val)
                 Res$Scaling_Factor <- Scaling_Factor
                 Res$RCV <- as.numeric(Res$RSquared_Y)/as.numeric(Res$QSquared_Y)
                 B.ind <- which.minn(unlist(Res[method_opt]), k=2)
                 Res <- as.list(Res)
-                if (as.numeric(Scaling_Factor[B.ind[1]])==0){
+                 if (as.numeric(Scaling_Factor[B.ind[1]])==0){
                     inter_2 = 0.01} 
                 if (as.numeric(Scaling_Factor[B.ind[1]])==1){
                     inter_2 = (as.numeric(Scaling_Factor[B.ind[1]]) - as.numeric(Scaling_Factor[B.ind[2]]))/10}
                 if (as.numeric(Scaling_Factor[B.ind[1]])!=1 & as.numeric(Scaling_Factor[B.ind[1]])!=0){
                     inter_2 = 0.01}
+                if (as.numeric(Scaling_Factor[B.ind[1]]) == as.numeric(Scaling_Factor[B.ind[2]])) {
+                    Scaling_Factor_B <- seq(0,1, as.numeric(0.01))}
                 if (as.numeric(Scaling_Factor[B.ind[1]]) < as.numeric(Scaling_Factor[B.ind[2]])) {
-                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[1]]),as.numeric(Scaling_Factor[B.ind[2]]), as.numeric(inter_2))}
-                if (as.numeric(Scaling_Factor[B.ind[1]]) > as.numeric(Scaling_Factor[B.ind[2]])){
-                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[2]]),as.numeric(Scaling_Factor[B.ind[1]]), as.numeric(inter_2))
-                if (as.numeric(Scaling_Factor[B.ind[1]]) == as.numeric(Scaling_Factor[B.ind[2]])){
-                    Scaling_Factor_B <- seq(0,1, as.numeric((inter/10)))}
+                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[1]]),as.numeric(Scaling_Factor[B.ind[2]]), as.numeric(inter_2))}else{ 
+                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[2]]),as.numeric(Scaling_Factor[B.ind[1]]), as.numeric(inter_2))}
                 Data_Sets2 <- SCALE(trainingData, Scaling_Factor_B)
                 Res2 <- Ridge(Data_Sets2, y, seed_val)
+               
                 Res2$Scaling_Factor <- Scaling_Factor_B
                 Res2$RCV <- as.numeric(Res2$RSquared_Y)/as.numeric(Res2$QSquared_Y)
                 Res3 <- mapply(c,Res[1:6], as.list(Res2[1:6]), SIMPLIFY=FALSE)
@@ -99,7 +98,6 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
             
 
     if (method=='PLS') {
-        method_opt= 'RCV'
                 print('Employing PLS')
                 Res <- PLS(Data_Sets, y, seed_val)
                 Res$Scaling_Factor <- Scaling_Factor
@@ -112,16 +110,15 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
                     inter_2 = (as.numeric(Scaling_Factor[B.ind[1]]) - as.numeric(Scaling_Factor[B.ind[2]]))/10}
                 if (as.numeric(Scaling_Factor[B.ind[1]])!=1 & as.numeric(Scaling_Factor[B.ind[1]])!=0){
                     inter_2 = 0.01}
+                if (as.numeric(Scaling_Factor[B.ind[1]]) == as.numeric(Scaling_Factor[B.ind[2]])) {
+                    Scaling_Factor_B <- seq(0,1, as.numeric(0.01))}
                 if (as.numeric(Scaling_Factor[B.ind[1]]) < as.numeric(Scaling_Factor[B.ind[2]])) {
-                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[1]]),as.numeric(Scaling_Factor[B.ind[2]]), as.numeric(inter_2))}
-                if (as.numeric(Scaling_Factor[B.ind[1]]) > as.numeric(Scaling_Factor[B.ind[2]])){
-                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[2]]),as.numeric(Scaling_Factor[B.ind[1]]), as.numeric(inter_2))
-                if (as.numeric(Scaling_Factor[B.ind[1]]) == as.numeric(Scaling_Factor[B.ind[2]])){
-                    Scaling_Factor_B <- seq(0,1, as.numeric((inter/10)))}
+                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[1]]),as.numeric(Scaling_Factor[B.ind[2]]), as.numeric(inter_2))}else{ 
+                    Scaling_Factor_B <- seq(as.numeric(Scaling_Factor[B.ind[2]]),as.numeric(Scaling_Factor[B.ind[1]]), as.numeric(inter_2))}
                 Data_Sets2 <- SCALE(trainingData, Scaling_Factor_B)
                 Res2 <- PLS(Data_Sets2, y, seed_val)
+               
                 Res2$Scaling_Factor <- Scaling_Factor_B
-                print(Scaling_Factor_B)
                 Res2$RCV <- as.numeric(Res2$RSquared_Y)/as.numeric(Res2$QSquared_Y)
                 Res3 <- mapply(c,Res[1:6], as.list(Res2[1:6]), SIMPLIFY=FALSE)
                 list.2d <- sapply(Res3[1:6], cbind)
@@ -130,6 +127,7 @@ ScaleR <- function(x,y, method='PLS', inter=NULL, plot=TRUE, seed_val=1234, k=NU
                 df.2d <- df.2d[!duplicated(df.2d$Scaling_Factor),]
                 df.2d <- df.2d[order(-as.numeric(df.2d$Scaling_Factor)),]
                 Res[1:6] <- df.2d
+               
 
     if (plot){
             plot(as.numeric(Res$Scaling_Factor),as.numeric(Res$RSquared_Y),type="l",col="red", xlim=c(0, 1), ylim=c(0, max(as.numeric(Res$RSquared_Y)+0.1)), xlab='', ylab='')
