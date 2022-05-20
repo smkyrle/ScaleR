@@ -8,3 +8,7 @@ SCALE <- function(d, Scaling_Factor) {
   }
   return(Data_Sets)
 }
+
+'''
+Scaling test data as well?
+'''
