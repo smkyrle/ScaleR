@@ -1,3 +1,29 @@
+#' @title  ScaleR: An R package for investigating scaling factors effects on models
+#'
+#' @description This package employs GLM regression or PLS over multiple scaling factors. Default is GLM
+#'
+#' @param x is a data matrix of predictors, features in columns and samples in rows.
+#'
+#' @parma y is the outcome variable.
+#'
+#' @param model is the model type you want to employ (model='glm'), default is GLM.
+#'
+#' @param gamma is the Scaling factor parameter, e.g list(0, 0.5, 1), default is sequence between 0 and 1 with an interval of 0.1
+#'
+#' @param lambda is the lambda parameter for glmnet
+#'
+#' @param alpha is the alpha parameter for glmnet. Input 0 for ridge regression, 1 for lasso regression, and a sequence of numbers between 0 and 1 for elastic nets.
+#'
+#' @param ncomp is the number of components used in pls
+#'
+#' @param nfolds is the number of folds used in k-fold cross validation
+#'
+#' @param rounds is the number of rounds of gamma sampling. After each round the grid space either side of the model with the lowest MSE is searched in the next round. Default rounds = 1.
+#'
+#' @return dataframe of parameters and performance metrics (MSE, R2, Q2)
+#'
+#' @export
+
 ScaleR.scale <- function(train, test, gamma){
     # Scale train and test data with input gamma value
     train.mean <- sapply(train, mean)
