@@ -24,7 +24,6 @@
 #'
 #' @export
 
-library(progress)
 library(glmnet)
 
 ScaleR.scale <- function(train, test, gamma){
@@ -198,6 +197,7 @@ grid.search <- function(x, y, model, grid, params, folds){
     perc_new <- NaN
     perc_old <- 0
     # Loop though grid rows
+
     for(i in 1:nrow(grid)){
         perc_new <- i/nrow(grid)*100
         if(perc_new-5 > perc_old){
@@ -239,7 +239,6 @@ grid.search <- function(x, y, model, grid, params, folds){
             else{
                 q2 <- residuals.squared(y_tmp$test, test.preds, means[[j]])
                 r2 <- residuals.squared(y_tmp$train, train.preds,  means[[j]])
-                q2r2 <-
                 results['mse'][results['gamma'] == params$grid$gamma & results['fold'] == j & results['ncomp'] == params$grid$ncomp] = mse
                 results['q2'][results['gamma'] == params$grid$gamma & results['fold'] == j & results['ncomp'] == params$grid$ncomp] = q2
                 results['r2'][results['gamma'] == params$grid$gamma & results['fold'] == j & results['ncomp'] == params$grid$ncomp] = r2
