@@ -24,10 +24,20 @@
 #'
 #' @export
 
+library(progress)
+library(glmnet)
+
 ScaleR.scale <- function(train, test, gamma){
     # Scale train and test data with input gamma value
+
     train.mean <- sapply(train, mean)
     train.sd <- sapply(train, sd)
+    indicies <- which(train.sd != 0)
+
+    train.sd <- train.sd[indicies]
+    train.mean <- train.mean[indicies]
+    train <- train[,indicies]
+    test <- test[,indicies]
     train.scaled <- mapply(function(x,y,z) (x-y)/(z^gamma), train, train.mean, train.sd)
     test.scaled <- mapply(function(x,y,z) (x-y)/(z^gamma), test, train.mean, train.sd)
     return(list(train=train.scaled,test=test.scaled))
@@ -75,7 +85,8 @@ fit.linear.model <- function(x, y, params){
     # Wrapper for glmnet
     lambda <- params$lambda
     alpha <- params$grid$alpha
-    model <- glmnet::glmnet(x=as.matrix(x), y=as.matrix(y),lambda=lambda, alpha=alpha, standardize=FALSE)
+    family <- params$family
+    model <- glmnet::glmnet(x=as.matrix(x), y=as.matrix(y),lambda=lambda, alpha=alpha, standardize=FALSE, family=family)
     return(model)
 }
 
@@ -158,14 +169,14 @@ process.results <-function(results){
     nfolds <- max(results$fold)
     for(row in 1:(nrow(results)/nfolds)){
         end <- start - 1 + nfolds
-        results$mse.mean[start:end] <- rep(mean(results$mse[start:end]),5)
-        results$mse.sd[start:end] <- rep(sd(results$mse[start:end]),5)
+        results$mse.mean[start:end] <- rep(mean(results$mse[start:end]),nfolds)
+        results$mse.sd[start:end] <- rep(sd(results$mse[start:end]),nfolds)
 
-        results$r2.mean[start:end] <- rep(mean(results$r2[start:end]),5)
-        results$r2.sd[start:end] <- rep(sd(results$r2[start:end]),5)
+        results$r2.mean[start:end] <- rep(mean(results$r2[start:end]),nfolds)
+        results$r2.sd[start:end] <- rep(sd(results$r2[start:end]),nfolds)
 
-        results$q2.mean[start:end] <- rep(mean(results$q2[start:end]),5)
-        results$q2.sd[start:end] <- rep(sd(results$q2[start:end]),5)
+        results$q2.mean[start:end] <- rep(mean(results$q2[start:end]),nfolds)
+        results$q2.sd[start:end] <- rep(sd(results$q2[start:end]),nfolds)
 
         start <- end+1
     }
@@ -184,10 +195,15 @@ grid.search <- function(x, y, model, grid, params, folds){
     if(exists('lambda', where=params)){grid <- subset(grid, select = -lambda)}
     grid <- grid[!duplicated(grid), ]
     means <- fold.means(y, folds)
-
+    perc_new <- NaN
+    perc_old <- 0
     # Loop though grid rows
     for(i in 1:nrow(grid)){
-
+        perc_new <- i/nrow(grid)*100
+        if(perc_new-5 > perc_old){
+            print(perc_new)
+            perc_old <- perc_new
+        }
         # Assign grid row to params
         params$grid <- grid[i,]
 
@@ -208,25 +224,29 @@ grid.search <- function(x, y, model, grid, params, folds){
             test.preds <- predict.model(fitted.model, x_tmp$test, params)
             train.preds <- predict.model(fitted.model, x_tmp$train, params)
             mse <- model.mse(test.preds, y_tmp$test)
-            q2 <- residuals.squared(y_tmp$test, test.preds, means[[j]])
-            r2 <- residuals.squared(y_tmp$train, train.preds,  means[[j]])
-
-
 
             # add mse to results dataframe
             if('lambda' %in% names(params)){
                 for(l in 1:length(params$lambda)){
+
+                    q2 <- residuals.squared(y_tmp$test, test.preds[,l], means[[j]])
+                    r2 <- residuals.squared(y_tmp$train, train.preds[,l],  means[[j]])
                     results['mse'][results['lambda'] == params$lambda[l] & results['alpha'] == params$grid$alpha & results['gamma'] == params$grid$gamma & results['fold'] == j] = mse[l]
-                    results['q2'][results['lambda'] == params$lambda[l] & results['alpha'] == params$grid$alpha & results['gamma'] == params$grid$gamma & results['fold'] == j] = q2[l]
-                    results['r2'][results['lambda'] == params$lambda[l] & results['alpha'] == params$grid$alpha & results['gamma'] == params$grid$gamma & results['fold'] == j] = r2[l]
+                    results['q2'][results['lambda'] == params$lambda[l] & results['alpha'] == params$grid$alpha & results['gamma'] == params$grid$gamma & results['fold'] == j] = q2
+                    results['r2'][results['lambda'] == params$lambda[l] & results['alpha'] == params$grid$alpha & results['gamma'] == params$grid$gamma & results['fold'] == j] = r2
                 }
             }
             else{
-                results['mse'][results['gamma'] == params$grid$gamma & results['fold'] == j] = mse
-                results['q2'][results['gamma'] == params$grid$gamma & results['fold'] == j] = q2
-                results['r2'][results['gamma'] == params$grid$gamma & results['fold'] == j] = r2
+                q2 <- residuals.squared(y_tmp$test, test.preds, means[[j]])
+                r2 <- residuals.squared(y_tmp$train, train.preds,  means[[j]])
+                q2r2 <-
+                results['mse'][results['gamma'] == params$grid$gamma & results['fold'] == j & results['ncomp'] == params$grid$ncomp] = mse
+                results['q2'][results['gamma'] == params$grid$gamma & results['fold'] == j & results['ncomp'] == params$grid$ncomp] = q2
+                results['r2'][results['gamma'] == params$grid$gamma & results['fold'] == j & results['ncomp'] == params$grid$ncomp] = r2
             }
+
         }
+
     }
 
     # Calculate cv mean and sd for mse, r2, q2
@@ -235,7 +255,7 @@ grid.search <- function(x, y, model, grid, params, folds){
     return(results)
 }
 
-ScaleR <- function(x, y, model='glm', gamma=seq(0, 1, by=0.1), lambda=NULL, alpha=NaN, ncomp=NULL, nfolds=2, rounds=1){
+ScaleR <- function(x, y, model='glm', gamma=seq(0, 1, by=0.1), lambda=NULL, alpha=NULL, ncomp=NULL, nfolds=2, rounds=1){
     # params list for non-specific model input
     params <-list()
 
@@ -246,28 +266,37 @@ ScaleR <- function(x, y, model='glm', gamma=seq(0, 1, by=0.1), lambda=NULL, alph
         if(is.null(lambda)){
             lambda <- 10^seq(3, -2, by = -.1)
         }
-        if(is.nan(alpha)){
+        if(is.null(alpha)){
             alpha <- 0
 
         }
         params$lambda <- lambda
-        if(alpha==0){
-            print("Running ridge regression")
-        }
-        if(alpha==1){
-            print("Running lasso regression")
-        }
+        print(alpha)
         if(length(alpha)>1){
             print("Running elastic nets")
         }
-    } else if(model == 'pls'){
+        else if(alpha==0){
+            print("Running ridge regression")
+        }
+        else if(alpha==1){
+            print("Running lasso regression")
+        }
+
+        if(length(unique(y)) == 2){
+            cat('Two unique values identified. \nSetting family to binomial.\n')
+            params$family = 'binomial'
+        } else if(length(unique(y)) > 2){
+            cat('More than two unique values identified. \nSetting family to gaussian.\n')
+            params$family = 'gaussian'
+        }
+    }
+    else if(model == 'pls'){
         model <- fit.pls.model
         if(is.null(ncomp)){
-            ncomp <- c(1:50)
+            ncomp <- c(1:20)
         }
         lambda <- NaN
         alpha <- NaN
-
     }
 
     # setup folds for cross val
@@ -292,7 +321,7 @@ ScaleR <- function(x, y, model='glm', gamma=seq(0, 1, by=0.1), lambda=NULL, alph
         max.gamma <- min.mse.mean$gamma + interval/2
         min.gamma <- min.mse.mean$gamma - interval/2
         interval <- (max.gamma - min.gamma)/(len)
-        gamma = seq(min.gamma, max.gamma, by=interval)
+        #gamma = seq(min.gamma, max.gamma, by=interval)
     }
     return(results)
 }
